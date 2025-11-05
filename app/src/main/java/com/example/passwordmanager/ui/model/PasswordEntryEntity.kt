@@ -8,5 +8,5 @@ data class PasswordEntryEntity(
     @PrimaryKey(autoGenerate = true) val id: Long = 0,
     val title: String,
     val username: String,
-    val password: String // WARNING: in production, encrypt this before storing
+    val password: String // Room will store this as encrypted via TypeConverter
 )

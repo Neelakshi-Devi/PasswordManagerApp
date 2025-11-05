@@ -11,7 +11,7 @@ import kotlinx.coroutines.launch
 class PasswordsViewModel(private val repo: PasswordsRepository) : ViewModel() {
 
     // Expose Flow from repo to UI - Compose will collect as state
-    val entriesFlow: Flow<List<PasswordEntryEntity>> = repo.allEntries()
+    val entriesFlow: Flow<List<PasswordEntryEntity>> = repo.allEntriesDecrypted()
 
     fun addEntry(title: String, username: String, password: String) {
         viewModelScope.launch(Dispatchers.IO) {
