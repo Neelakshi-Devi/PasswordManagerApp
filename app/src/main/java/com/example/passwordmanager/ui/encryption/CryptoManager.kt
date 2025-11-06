@@ -66,14 +66,19 @@ object CryptoManager {
 
         ensureKeyExists()
         val key = getSecretKey()
+
+        // ENCRYPT: do NOT provide IV. Let Keystore generate it.
         val cipher = Cipher.getInstance(TRANSFORMATION)
-        val iv = ByteArray(IV_SIZE_BYTES).also { secureRandom.nextBytes(it) }
-        val spec = GCMParameterSpec(TAG_LENGTH_BITS, iv)
-        cipher.init(Cipher.ENCRYPT_MODE, key, spec)
+        cipher.init(Cipher.ENCRYPT_MODE, key)
+
+        // Retrieve the auto-generated 12-byte IV
+        val iv = cipher.iv
+        require(iv?.size == IV_SIZE_BYTES) { "Unexpected IV length for GCM" }
+
         val cipherText = cipher.doFinal(plainText.toByteArray(Charsets.UTF_8))
 
-        // Combine IV + ciphertext
-        val combined = ByteBuffer.allocate(iv.size + cipherText.size)
+        // Store Base64( IV || ciphertext )
+        val combined = ByteBuffer.allocate(IV_SIZE_BYTES + cipherText.size)
             .put(iv)
             .put(cipherText)
             .array()
